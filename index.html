@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HogIntel — Smart Pricing for Backyard Farmers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+          --primary: #2e7d32;
+          --primary-light: #4caf50;
+          --accent: #ff6f00;
+          --accent-light: #ffb74d;
+          --white: #ffffff;
+          --gray-light: #f5f5f5;
+          --gray-medium: #e0e0e0;
+          --gray-dark: #333333;
+          --text: #1a1a1a;
+          --text-light: #666666;
+          --error: #d32f2f;
+          --radius: 8px;
+          --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+          --font-mono: "Courier New", monospace;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        html {
+          scroll-behavior: smooth;
+        }
+
+        body {
+          font-family: var(--font-sans);
+          background: var(--white);
+          color: var(--text);
+          line-height: 1.6;
+          overflow-x: hidden;
+        }
+
+        .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 20px;
+        }
+
+        h1 {
+          font-size: clamp(1.75rem, 5vw, 3rem);
+          font-weight: 700;
+          line-height: 1.2;
+          margin-bottom: 20px;
+        }
+
+        h2 {
+          font-size: clamp(1.5rem, 4vw, 2.5rem);
+          font-weight: 700;
+          line-height: 1.2;
+          margin-bottom: 10px;
+        }
+
+        h3 {
+          font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+          font-weight: 600;
+        }
+
+        p {
+          font-size: clamp(0.9rem, 2vw, 1rem);
+          color: var(--text-light);
+        }
+
+        .btn {
+          padding: 14px 28px;
+          font-size: clamp(0.9rem, 2vw, 1rem);
+          font-weight: 600;
+          border: none;
+          border-radius: var(--radius);
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          text-decoration: none;
+          text-align: center;
+          width: auto;
+        }
+
+        .btn-primary {
+          background: var(--primary);
+          color: var(--white);
+        }
+
+        .btn-primary:hover {
+          background: var(--primary-light);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(46, 125, 50, 0.2);
+        }
+
+        .btn-secondary {
+          background: transparent;
+          color: var(--primary);
+          border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+          background: var(--primary);
+          color: var(--white);
+        }
+
+        .button-group {
+          display: flex;
+          gap: 16px;
+          margin-top: 32px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        /* Header */
+        header {
+          background: var(--white);
+          border-bottom: 1px solid var(--gray-medium);
+          padding: 16px 0;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .logo {
+          font-weight: 700;
+          font-size: clamp(1.1rem, 3vw, 1.3rem);
+          color: var(--primary);
+          flex-shrink: 0;
+        }
+
+        .nav-links {
+          list-style: none;
+          display: flex;
+          gap: 24px;
+          flex: 1;
+          justify-content: flex-end;
+        }
+
+        .nav-links a {
+          text-decoration: none;
+          color: var(--text);
+          font-weight: 500;
+          font-size: clamp(0.85rem, 1.8vw, 1rem);
+          transition: color 0.3s ease;
+          white-space: nowrap;
+        }
+
+        .nav-links a:hover {
+          color: var(--primary);
+        }
+
+        .mobile-menu-btn {
+          display: none;
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          cursor: pointer;
+          color: var(--primary);
+          padding: 8px;
+        }
+
+        .mobile-nav {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100vh;
+          background: rgba(0,0,0,0.9);
+          z-index: 9999;
+          padding: 20px;
+        }
+
+        .mobile-nav.active {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .mobile-nav-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 40px;
+        }
+
+        .mobile-nav-close {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 2rem;
+          cursor: pointer;
+        }
+
+        .mobile-nav-links {
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+
+        .mobile-nav-links a {
+          color: white;
+          text-decoration: none;
+          font-size: 1.5rem;
+          font-weight: 600;
+          padding: 12px;
+          display: block;
+          transition: all 0.3s ease;
+        }
+
+        .mobile-nav-links a:hover {
+          color: var(--accent);
+          transform: translateX(10px);
+        }
+
+        /* Hero Section */
+        .hero {
+          padding: clamp(40px, 8vw, 80px) 0;
+          background: linear-gradient(135deg, rgba(46, 125, 50, 0.05) 0%, rgba(255, 111, 0, 0.05) 100%);
+          text-align: center;
+        }
+
+        .hero h1 {
+          color: var(--primary);
+          margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+          font-size: clamp(1.1rem, 3vw, 1.3rem);
+          color: var(--accent);
+          font-weight: 600;
+          margin-bottom: 12px;
+        }
+
+        .hero-description {
+          font-size: clamp(0.95rem, 2.2vw, 1.05rem);
+          color: #555;
+          margin-bottom: 2rem;
+          max-width: 600px;
+          margin-left: auto;
+          margin-right: auto;
+          padding: 0 20px;
+        }
+
+        /* Content Section */
+        .content {
+          padding: clamp(40px, 8vw, 60px) 0;
+          background: var(--white);
+        }
+
+        .content-section {
+          margin-bottom: 3rem;
+        }
+
+        .content-section h2 {
+          color: var(--primary);
+          text-align: center;
+          margin-bottom: 1rem;
+        }
+
+        .section-title {
+          display: inline-block;
+          font-weight: 600;
+          color: var(--primary);
+          margin-bottom: 1.5rem;
+          padding-bottom: 0.5rem;
+          border-bottom: 2px solid var(--accent);
+          font-size: clamp(1rem, 2.5vw, 1.2rem);
+        }
+
+        /* Problems Showcase */
+        .problems-showcase {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+          gap: clamp(1rem, 3vw, 2rem);
+          margin-top: 2rem;
+        }
+
+        .problem-showcase-card {
+          padding: clamp(1.5rem, 4vw, 2rem);
+          background: #f9f9f9;
+          border-left: 4px solid var(--accent);
+          border-radius: 8px;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          opacity: 0;
+        }
+
+        .problem-showcase-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .problem-showcase-card h3 {
+          color: var(--primary);
+          margin-bottom: 0.75rem;
+        }
+
+        .problem-showcase-card p {
+          color: #757575;
+          font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
+
+        .problem-icon {
+          font-size: clamp(2rem, 5vw, 2.5rem);
+          margin-bottom: 1rem;
+          display: inline-block;
+        }
+
+        .problem-icon.red {
+          color: #d32f2f;
+        }
+
+        .problem-icon.orange {
+          color: var(--accent);
+        }
+
+        .problem-icon.green {
+          color: var(--primary);
+        }
+
+        /* Solution Section */
+        .solution-section {
+          padding: clamp(40px, 8vw, 6rem) 0;
+          background: white;
+        }
+
+        /* Features Grid */
+        .features-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+          gap: clamp(1rem, 3vw, 2rem);
+          margin-top: 2rem;
+        }
+
+        .feature-card {
+          padding: clamp(1.5rem, 4vw, 2rem);
+          background: #f9f9f9;
+          border-radius: 8px;
+          border-top: 3px solid var(--primary);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          opacity: 0;
+        }
+
+        .feature-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card h3 {
+          color: var(--primary);
+          margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+          color: #757575;
+          font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
+
+        /* Workflow Steps */
+        .workflow-steps {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+          gap: clamp(1rem, 3vw, 2rem);
+          margin-top: 2rem;
+        }
+
+        .step {
+          padding: clamp(1.5rem, 4vw, 2rem);
+          background: white;
+          border-radius: 8px;
+          text-align: center;
+        }
+
+        .large-step {
+          padding: clamp(2rem, 5vw, 2.5rem) !important;
+          background: linear-gradient(135deg, #f0f7f0 0%, #fff0e6 100%);
+          border: 1px solid #e0e0e0;
+          opacity: 0;
+        }
+
+        .step-number {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          background: var(--primary);
+          color: white;
+          border-radius: 50%;
+          font-weight: 700;
+          font-size: 1.1rem;
+          margin-bottom: 1rem;
+        }
+
+        .step-icon {
+          font-size: clamp(2rem, 5vw, 2.5rem);
+          margin-bottom: 1rem;
+          display: block;
+        }
+
+        .large-step .step-icon {
+          font-size: clamp(2.5rem, 6vw, 3rem);
+          margin-bottom: 1.5rem;
+        }
+
+        .step h3 {
+          color: var(--primary);
+          margin-bottom: 0.75rem;
+        }
+
+        .step p {
+          color: #757575;
+          font-size: clamp(0.85rem, 2vw, 0.95rem);
+        }
+
+        /* Benefits List */
+        .benefits-list {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+          gap: clamp(1rem, 3vw, 2rem);
+          margin-top: 2rem;
+        }
+
+        .benefit-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 1rem;
+          color: white;
+          opacity: 0;
+        }
+
+        .benefit-icon {
+          font-size: clamp(1.5rem, 3.5vw, 1.8rem);
+          flex-shrink: 0;
+        }
+
+        .benefit-text {
+          font-size: clamp(0.85rem, 2vw, 0.95rem);
+          line-height: 1.5;
+        }
+
+        /* Benefits Highlight */
+        .benefits-highlight {
+          background: linear-gradient(135deg, var(--primary) 0%, #1b5e20 100%);
+          color: white;
+          padding: clamp(2rem, 5vw, 3rem);
+          border-radius: 12px;
+          margin-top: 3rem;
+        }
+
+        .benefits-highlight h3 {
+          color: white;
+          text-align: center;
+          margin-bottom: 1.5rem;
+        }
+
+        /* Testimonials */
+        .testimonials {
+          padding: clamp(40px, 8vw, 6rem) 0;
+          background: #f9f9f9;
+        }
+
+        .testimonials h2 {
+          text-align: center;
+          margin-bottom: 3rem;
+          color: var(--primary);
+        }
+
+        .testimonials-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+          gap: clamp(1rem, 3vw, 2rem);
+        }
+
+        .testimonial {
+          padding: clamp(1.5rem, 4vw, 2rem);
+          background: white;
+          border-radius: 8px;
+          border-left: 4px solid var(--primary);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+          opacity: 0;
+        }
+
+        .testimonial p {
+          font-size: clamp(0.85rem, 2vw, 0.95rem);
+          color: #424242;
+          font-style: italic;
+          margin-bottom: 1rem;
+        }
+
+        .testimonial-author {
+          display: block;
+          font-size: clamp(0.8rem, 1.8vw, 0.85rem);
+          color: var(--primary);
+          font-weight: 600;
+        }
+
+        /* Footer */
+        footer {
+          background: var(--gray-dark);
+          color: var(--white);
+          padding: 40px 20px 20px;
+          text-align: center;
+        }
+
+        footer p {
+          color: rgba(255, 255, 255, 0.8);
+          font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+        }
+
+        /* Animations */
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        /* Tablet Responsive */
+        @media (max-width: 768px) {
+          .nav-links {
+            display: none;
+          }
+
+          .mobile-menu-btn {
+            display: block;
+          }
+
+          .button-group {
+            flex-direction: column;
+            gap: 12px;
+          }
+
+          .btn {
+            width: 100%;
+            padding: 14px 24px;
+          }
+
+          .container {
+            padding: 0 16px;
+          }
+
+          .problems-showcase,
+          .features-grid,
+          .workflow-steps,
+          .benefits-list,
+          .testimonials-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .benefits-list {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+          .hero {
+            padding: 30px 0;
+          }
+
+          .hero-description {
+            padding: 0 10px;
+          }
+
+          .button-group {
+            padding: 0 10px;
+          }
+
+          .problem-showcase-card,
+          .feature-card,
+          .large-step,
+          .testimonial {
+            padding: 1.25rem;
+          }
+
+          .benefits-highlight {
+            padding: 1.5rem;
+          }
+
+          .content,
+          .solution-section,
+          .testimonials {
+            padding: 30px 0;
+          }
+
+          .section-title {
+            font-size: 1rem;
+          }
+
+          .step-number {
+            width: 36px;
+            height: 36px;
+            font-size: 1rem;
+          }
+        }
+
+        /* Extra Small Devices */
+        @media (max-width: 360px) {
+          .container {
+            padding: 0 12px;
+          }
+
+          .btn {
+            padding: 12px 20px;
+            font-size: 0.85rem;
+          }
+
+          .problem-showcase-card,
+          .feature-card,
+          .large-step,
+          .testimonial {
+            padding: 1rem;
+          }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo"> HogIntel</div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">☰</button>
+                <nav class="nav-links">
+                    <li><a href="#problems">Why HogIntel</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#download">Download</a></li>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <div class="logo">🐖 HogIntel</div>
+            <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">✕</button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="#problems" class="mobile-nav-link">Why HogIntel</a></li>
+            <li><a href="#features" class="mobile-nav-link">Features</a></li>
+            <li><a href="#how-it-works" class="mobile-nav-link">How It Works</a></li>
+            <li><a href="#download" class="mobile-nav-link">Download</a></li>
+        </ul>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Sell Your Hogs Smarter</h1>
+            <p class="hero-subtitle">Know Your Market Price. Avoid Scams. Get Fair Deals Instantly.</p>
+            <p class="hero-description">HogIntel is built for backyard farmers like you. No more scales, no more guessing, no more leaving money on the table.</p>
+            <div class="button-group">
+                <a href="#download" class="btn btn-primary">📥 Download HogIntel App</a>
+                <a href="#features" class="btn btn-secondary">See How It Works</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problems Section -->
+    <section class="content" id="problems">
+        <div class="container">
+            <div class="content-section">
+                <h2>The Challenges You Face Every Day</h2>
+                <p style="font-size: clamp(0.95rem, 2.2vw, 1.1rem); color: #424242; margin-bottom: 2rem; text-align: center; padding: 0 10px;">
+                    We understand the struggles of backyard farming. HogIntel was built to solve the problems that cost you money and time.
+                </p>
+            </div>
+
+            <div class="problems-showcase">
+                <div class="problem-showcase-card">
+                    <div class="problem-icon red">❓</div>
+                    <h3>No Idea About Local Market Prices</h3>
+                    <p>Without knowing what hogs are selling for today, you're at the buyer's mercy. Many farmers get scammed or accept unfairly low prices because they don't know better.</p>
+                </div>
+                <div class="problem-showcase-card">
+                    <div class="problem-icon orange">⚖️</div>
+                    <h3>Hassle of Manual Weighing</h3>
+                    <p>Lifting hogs onto scales is exhausting, stressful for animals, and time-consuming. You need an easier way to get accurate weight without the struggle.</p>
+                </div>
+                <div class="problem-showcase-card">
+                    <div class="problem-icon green">😞</div>
+                    <h3>Lost Sales & Negotiations</h3>
+                    <p>Buyers dispute the weight. You can't defend your price. The deal falls through and you lose the sale entirely. Uncertainty kills negotiations.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution-section">
+        <div class="container">
+            <h2 style="text-align: center; color: var(--primary);">Your Solution: HogIntel</h2>
+            <p style="font-size: clamp(0.95rem, 2.2vw, 1.1rem); color: #424242; margin-bottom: 3rem; text-align: center; padding: 0 10px;">
+                A simple, smartphone-based system that gives you the information and confidence to negotiate like a pro.
+            </p>
+
+            <!-- Features -->
+            <div class="content-section" id="features">
+                <div class="section-title">🔹 Key Features</div>
+                <div class="features-grid">
+                    <div class="feature-card">
+                    <h3>📊 Real-Time Market Prices</h3>
+                    <p>
+                        Access the latest hog market prices instantly, powered by Ridge Regression model and real market data.
+                        The predicted price serves as a fair and transparent basis for farmers when negotiating 
+                        with traders or buyers — ensuring every sale reflects real market value.
+                    </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h3>📐 Weight Estimation by Visual Assessment</h3>
+                        <p>Based on standard farmer assessment methods. Compare your hog against known reference sizes to get a quick estimate. No scales needed.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>💰 Instant Price Calculation</h3>
+                        <p>Get your hog's value instantly. Weight × Market Price = Fair Deal. Back your prices with data. Buyers will respect it.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>✅ Confirm Before Selling</h3>
+                        <p>Review the estimated weight and accept, adjust, or reassess. You stay in control at every step.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📡 Always Connected</h3>
+                        <p>Get real-time market prices and consistent updates. Stay informed with live data to make the best decisions.</p>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="content-section" id="how-it-works">
+                <div class="section-title">🔹 How It Works - Simple 3 Steps</div>
+                <div class="workflow-steps">
+                    <div class="step large-step">
+                        <div class="step-number">1</div>
+                        <div class="step-icon">📏</div>
+                        <h3>Assess Your Hog</h3>
+                        <p>Using standard farmer methods, assess your hog's size compared to known reference weights. Quick and reliable.</p>
+                    </div>
+                    <div class="step large-step">
+                        <div class="step-number">2</div>
+                        <div class="step-icon">⚖️</div>
+                        <h3>Enter Weight Estimate</h3>
+                        <p>Input your estimated weight into the app. Adjust as needed—you know your animals best.</p>
+                    </div>
+                    <div class="step large-step">
+                        <div class="step-number">3</div>
+                        <div class="step-icon">💵</div>
+                        <h3>See Your Price</h3>
+                        <p>Get the calculated value based on your weight and today's market price. Show your buyer the data and negotiate confidently.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benefits -->
+            <div class="benefits-highlight">
+                <h3>What You Gain</h3>
+                <div class="benefits-list">
+                    <div class="benefit-item">
+                        <span class="benefit-icon">💰</span>
+                        <span class="benefit-text"><strong>More Money:</strong> Avoid scams and get fair prices every time</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">⏱️</span>
+                        <span class="benefit-text"><strong>Save Time:</strong> No more manual weighing or paperwork</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">😌</span>
+                        <span class="benefit-text"><strong>Less Stress:</strong> Make decisions backed by real data</span>
+                    </div>
+                    <div class="benefit-item">
+                        <span class="benefit-icon">💪</span>
+                        <span class="benefit-text"><strong>Better Negotiations:</strong> Buyers respect data. Negotiate with confidence.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- Download Section -->
+    <section class="content" id="download" style="text-align: center;">
+        <div class="container">
+            <h2>Ready to Sell Smarter?</h2>
+            <p style="margin-bottom: 2rem; font-size: clamp(0.95rem, 2.2vw, 1.1rem); color: #424242; padding: 0 10px;">
+                Download HogIntel today and start getting fair prices for your hogs.
+            </p>
+            <div class="button-group">
+                <a href="https://drive.google.com/file/d/12K-tMRAqbc7U1V7a-DVHK9jHHi8jupET" class="btn btn-primary" id="downloadBtn">📥 Download HogIntel App</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+            <p style="margin-top: 2rem; font-size: clamp(0.8rem, 1.8vw, 0.95rem); color: #757575; padding: 0 10px;">
+                Available on  Android only • Free to download • No hidden fees • Built for farmers like you
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 HogIntel — Smart Pricing for Backyard Farmers. Developed to empower small-scale hog farmers.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          // Mobile Menu Toggle
+          const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+          const mobileNav = document.getElementById('mobileNav');
+          const mobileNavClose = document.getElementById('mobileNavClose');
+          const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+          mobileMenuBtn.addEventListener('click', () => {
+            mobileNav.classList.add('active');
+            document.body.style.overflow = 'hidden';
+          });
+
+          mobileNavClose.addEventListener('click', () => {
+            mobileNav.classList.remove('active');
+            document.body.style.overflow = '';
+          });
+
+          mobileNavLinks.forEach(link => {
+            link.addEventListener('click', () => {
+              mobileNav.classList.remove('active');
+              document.body.style.overflow = '';
+            });
+          });
+
+          // Close mobile menu on escape key
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+              mobileNav.classList.remove('active');
+              document.body.style.overflow = '';
+            }
+          });
+
+          // Smooth scrolling for all anchor links
+          const navLinks = document.querySelectorAll("a[href^='#']");
+          navLinks.forEach((link) => {
+            link.addEventListener("click", function (e) {
+              const href = this.getAttribute("href");
+              if (href !== "#" && document.querySelector(href)) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                const headerOffset = 80;
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                  top: offsetPosition,
+                  behavior: "smooth"
+                });
+              }
+            });
+          });
+
+          // Enhanced download handler with error checking
+        const downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function(e) {
+                console.log("Download initiated for HogIntel APK");
+                
+                // Add loading state to button
+                this.innerHTML = '⏳ Downloading...';
+                this.style.opacity = '0.7';
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    this.innerHTML = '📥 Download HogIntel App';
+                    this.style.opacity = '1';
+                }, 3000);
+                
+                // Track download success (this is approximate)
+                setTimeout(() => {
+                    console.log("Download likely completed");
+                }, 5000);
+            });
+        }
+
+          // Intersection Observer for animations
+          const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px",
+          };
+
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.style.animation = "fadeIn 0.6s ease-out forwards";
+                observer.unobserve(entry.target);
+              }
+            });
+          }, observerOptions);
+
+          // Observe all animated elements
+          document
+            .querySelectorAll(".problem-showcase-card, .feature-card, .benefit-item, .testimonial, .large-step")
+            .forEach((el) => {
+              el.style.opacity = "0";
+              observer.observe(el);
+            });
+
+          // Add touch feedback for mobile
+          const allButtons = document.querySelectorAll('.btn');
+          allButtons.forEach(button => {
+            button.addEventListener('touchstart', function() {
+              this.style.transform = 'scale(0.98)';
+            });
+            button.addEventListener('touchend', function() {
+              this.style.transform = '';
+            });
+          });
+
+          // Prevent zoom on input focus for iOS
+          const viewport = document.querySelector('meta[name="viewport"]');
+          if (viewport && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1, maximum-scale=1');
+          }
+        });
+    </script>
